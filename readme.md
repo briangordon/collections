@@ -1,4 +1,4 @@
-Collections
+Collections [![Build Status](https://travis-ci.org/briangordon/collections.svg?branch=master)](https://travis-ci.org/briangordon/collections)
 ===========
 
 This is a collection of collections data structures written in Java 7. These are accompanied by extensive tests which prove the correctness of the implementations.
