@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @author Brian Gordon
  */
-public class SynchronizedArrayQueueTests {
+public class SynchronizedArrayQueueTest {
     /**
      * Compare the queue state at every step to that of java.util.ArrayDeque.
      */

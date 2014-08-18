@@ -17,10 +17,10 @@ import java.util.*;
  * @author Brian Gordon
  */
 @RunWith(Parameterized.class)
-public class QueueTests {
+public class QueueTest {
     private QueueFactory<Integer> queueFactory;
 
-    public QueueTests(QueueFactory<Integer> queueFactory) {
+    public QueueTest(QueueFactory<Integer> queueFactory) {
         this.queueFactory = queueFactory;
     }
 
