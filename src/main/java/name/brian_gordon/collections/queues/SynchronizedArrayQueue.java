@@ -132,9 +132,6 @@ public class SynchronizedArrayQueue<T> implements Queue<T> {
         // a size greater than MAX_ARRAY_SIZE and we're running on a VM which doesn't allow it.
         Object[] newAry = new Object[newCapacity];
 
-        //      HT
-        // [ 14 12 17 16 15 ]
-
         // Unroll the old circular array so that we can add empty space at the end.
         if(headIdx < tailIdx) {
             // The queue items are in one contiguous chunk. Just copy the chunk to the new array.
