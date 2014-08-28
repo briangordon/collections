@@ -36,10 +36,8 @@ public class MultithreadedQueueTest {
         Queue<Integer> queue = queueFactory.makeQueue();
 
         // Start up enqueuing actors.
-        List<EnqueuingActor> enqueuingActors = new ArrayList<>();
         for(int i=0; i<NUMBER_OF_ACTORS; i++) {
-            EnqueuingActor actor = new EnqueuingActor(queue);
-            enqueuingActors.add(actor);
+            EnqueuingActor actor = new EnqueuingActor(queue, i);
             executor.execute(actor);
         }
 
@@ -58,14 +56,84 @@ public class MultithreadedQueueTest {
         }
 
         // Verify output.
-        List<List<Integer>> in = new ArrayList<>(), out = new ArrayList<>();
-        for(EnqueuingActor actor : enqueuingActors) {
-            in.add(actor.getLocal());
-        }
+        List<List<Integer>> outs = new ArrayList<>();
         for(DequeuingActor actor : dequeuingActors) {
-            out.add(actor.getLocal());
+            outs.add(actor.getLocal());
         }
-        Assert.assertTrue(verify(in, out));
+        verify(outs);
+    }
+
+    /**
+     * Verifies that the observed outputs of the dequeuing actors are possible given the behavior of the enqueuing actors.
+     *
+     * @param outs The histories of the dequeuing actors.
+     */
+    public void verify(List<List<Integer>> outs) {
+        for(List<Integer> out : outs) {
+            for(int offset=0; offset<NUMBER_OF_ACTORS; offset++) {
+                int last = -1;
+                for(Integer cur : out) {
+                    if(cur % NUMBER_OF_ACTORS == offset) {
+                        Assert.assertTrue(cur > last);
+                        last = cur;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * An actor which enqueues items.
+     */
+    private static class EnqueuingActor implements Runnable {
+        Queue<Integer> queue;
+        int offset;
+
+        /**
+         * @param offset We will use modulus to determine whether two items were enqeued by the same actor.
+         *               All items enqueued by this actor will be congruent to offset (modulo NUMBER_OF_ACTORS).
+         */
+        public EnqueuingActor(Queue<Integer> queue, int offset) {
+            EnqueuingActor.this.queue = queue;
+            EnqueuingActor.this.offset = offset;
+        }
+
+        @Override
+        public void run() {
+            int cur = offset;
+            for(int i=0; i<ACTIONS_PER_ACTOR; i++) {
+                queue.add(cur);
+                cur += NUMBER_OF_ACTORS;
+            }
+        }
+    }
+
+    /**
+     * An actor which dequeues items.
+     */
+    private static class DequeuingActor implements Runnable {
+        Queue<Integer> queue;
+        List<Integer> local = new ArrayList<>();
+
+        public DequeuingActor(Queue<Integer> queue) {
+            DequeuingActor.this.queue = queue;
+        }
+
+        @Override
+        public void run() {
+            for(int i=0; i<ACTIONS_PER_ACTOR; i++) {
+                Integer result;
+                while((result = queue.remove()) == null) {}
+                local.add(result);
+            }
+        }
+
+        /**
+         * Get the integers that this actor has dequeued, in order.
+         */
+        public List<Integer> getLocal() {
+            return local;
+        }
     }
 
     /**
@@ -99,74 +167,6 @@ public class MultithreadedQueueTest {
         Assert.assertNotNull(queueCount);
         Assert.assertEquals(atomicCounter.get(), unsafeCounter.get());
         Assert.assertEquals(atomicCounter.get(), (int)queueCount);
-    }
-
-    /**
-     * Verifies that if two items are ordered with respect to enqueuing then they are
-     * ordered with respect to dequeuing.
-     *
-     * @param in All of the histories of the enqueuing actors.
-     * @param out All of the histories of the dequeueing actors.
-     */
-    public boolean verify(List<List<Integer>> in, List<List<Integer>> out) {
-        // Stub
-        return true;
-    }
-
-    /**
-     * An actor which enqueues items.
-     */
-    private static class EnqueuingActor implements Runnable {
-        Queue<Integer> queue;
-        Random random = new Random();
-        List<Integer> local = new ArrayList<>();
-
-        public EnqueuingActor(Queue<Integer> queue) {
-            EnqueuingActor.this.queue = queue;
-        }
-
-        @Override
-        public void run() {
-            for(int i=0; i<ACTIONS_PER_ACTOR; i++) {
-                local.add(i);
-                queue.add(i);
-            }
-        }
-
-        /**
-         * Get the integers that this actor has enqueued, in order.
-         */
-        public List<Integer> getLocal() {
-            return local;
-        }
-    }
-
-    /**
-     * An actor which dequeues items.
-     */
-    private static class DequeuingActor implements Runnable {
-        Queue<Integer> queue;
-        List<Integer> local = new ArrayList<>();
-
-        public DequeuingActor(Queue<Integer> queue) {
-            DequeuingActor.this.queue = queue;
-        }
-
-        @Override
-        public void run() {
-            for(int i=0; i<ACTIONS_PER_ACTOR; i++) {
-                Integer result;
-                while((result = queue.remove()) == null) {}
-                local.add(result);
-            }
-        }
-
-        /**
-         * Get the integers that this actor has enqueued, in order.
-         */
-        public List<Integer> getLocal() {
-            return local;
-        }
     }
 
     /**
