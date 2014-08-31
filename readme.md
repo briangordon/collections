@@ -17,7 +17,7 @@ Pending
 Name                    | Description
 ----------------------- | -------------
 LockFreeLinkedQueue     | A lock-free doubly-linked queue for highly concurrent applications.
-LockFreeLinkedStack     | A lock-free doubly-linked stack for highly concurrent applications.
+LockFreeLinkedStack     | A lock-free linked stack for highly concurrent applications.
 SynchronizedLinkedQueue | A thread-safe doubly-linked queue which uses fine-grained locking to allow simultaneous enqueues and dequeues.
 
 License
