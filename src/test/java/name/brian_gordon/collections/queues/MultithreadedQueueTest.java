@@ -90,8 +90,9 @@ public class MultithreadedQueueTest {
         int offset;
 
         /**
-         * @param offset We will use modulus to determine whether two items were enqeued by the same actor.
-         *               All items enqueued by this actor will be congruent to offset (modulo NUMBER_OF_ACTORS).
+         * @param offset We will use modulus to determine whether two items were enqeued by the same actor, and therefore
+         *               whether they should be ordered with respect to each other. All items enqueued by this actor will
+         *               be congruent to offset (modulo NUMBER_OF_ACTORS).
          */
         public EnqueuingActor(Queue<Integer> queue, int offset) {
             EnqueuingActor.this.queue = queue;
