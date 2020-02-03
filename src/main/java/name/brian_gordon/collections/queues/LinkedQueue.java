@@ -42,6 +42,7 @@ public class LinkedQueue<T> implements Queue<T> {
             head = tail = null;
         } else {
             tail = tail.prev;
+            // TODO update tail.prev.next link
         }
 
         return ret;

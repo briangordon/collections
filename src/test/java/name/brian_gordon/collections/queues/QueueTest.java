@@ -1,9 +1,5 @@
 package name.brian_gordon.collections.queues;
 
-
-import name.brian_gordon.collections.queues.factories.LinkedQueueFactory;
-import name.brian_gordon.collections.queues.factories.QueueFactory;
-import name.brian_gordon.collections.queues.factories.SynchronizedArrayQueueFactory;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -108,13 +104,15 @@ public class QueueTest {
 
     // We need to parameterize the JUnit test on factories rather than on actual instances, because the Parameterized
     // runner reuses the same instance for every test!
-
     @Parameterized.Parameters
-    public static Collection<Object[]> factories() {
-        return Arrays.asList(
-                new Object[]{new LinkedQueueFactory<Integer>()},
-                new Object[]{new SynchronizedArrayQueueFactory<Integer>(3)},
-                new Object[]{new SynchronizedArrayQueueFactory<Integer>(10)}
-               );
+    public static List<QueueFactory<Integer>[]> factories() {
+        return List.of(
+                new QueueFactory[] {() -> new LinkedQueue<Integer>()},
+                new QueueFactory[] {() -> new ArrayQueue<Integer>()},
+                new QueueFactory[] {() -> new ArrayQueue<Integer>(3)},
+                new QueueFactory[] {() -> new ArrayQueue<Integer>(5)},
+                new QueueFactory[] {() -> new SynchronizedArrayQueue<Integer>(3)},
+                new QueueFactory[] {() -> new SynchronizedArrayQueue<Integer>(10)}
+        );
     }
 }
